@@ -8,7 +8,6 @@
 #include <sycl/sycl.hpp>
 #include <iostream>
 
-
 int main() {
   auto AsyncHandler = [](sycl::exception_list exceptions) {
     for (auto& exception: exceptions) {
