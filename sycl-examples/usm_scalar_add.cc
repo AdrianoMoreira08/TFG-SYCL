@@ -11,13 +11,13 @@ int main() {
   const size_t kDataSize{1024};
   sycl::queue queue;
 
-  float* summand_a{sycl::malloc_shared<float>(kDataSize, queue)};
-  float* summand_b{sycl::malloc_shared<float>(kDataSize, queue)};
-  float* result{sycl::malloc_shared<float>(kDataSize, queue)};
+  double* summand_a{sycl::malloc_shared<double>(kDataSize, queue)};
+  double* summand_b{sycl::malloc_shared<double>(kDataSize, queue)};
+  double* result{sycl::malloc_shared<double>(kDataSize, queue)};
 
   auto initialization_task = queue.parallel_for(kDataSize, [=](sycl::id<1> index){
-    summand_a[index] = static_cast<float>(index);
-    summand_b[index] = static_cast<float>(index);
+    summand_a[index] = static_cast<double>(index);
+    summand_b[index] = static_cast<double>(index);
     result[index] = 0.0f;
   });
 
