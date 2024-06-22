@@ -34,3 +34,5 @@ namespace Text {
     "Invalid threshold type. Use one of the following: (m)edian, (a)verage."
   };
 }
+
+inline double NanosecondsToSeconds(int64_t time) { return time * 1e-9; }

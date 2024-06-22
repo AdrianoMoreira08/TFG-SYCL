@@ -13,6 +13,7 @@
 #include <sstream>
 #include <string>
 #include <iostream>
+#include <chrono>
 
 #include "../include/morphology.h"
 #include "../include/fits_image.h"
@@ -69,7 +70,8 @@ int ProtectedMain(int argc, char* argv[]) {
   image.ConvertToBinary(threshold);
   std::stringstream morphology_data{image.GetMorphologyData()};
   Morphology morphology(morphology_data, structuring_element_file);
-  std::stringstream result_erosion_data;  
+  std::stringstream result_erosion_data;
+  auto start_time = std::chrono::steady_clock::now();
   switch (operation) {
     case 'd':
     case 'D':
@@ -91,6 +93,9 @@ int ProtectedMain(int argc, char* argv[]) {
       std::cerr << Text::kInvalidOperation << std::endl;
       break;
   }
+  auto end_time = std::chrono::steady_clock::now();
+  auto time = std::chrono::duration_cast<std::chrono::nanoseconds>(end_time - start_time).count();
+  std::cout << "Operation execution time: " << NanosecondsToSeconds(time) << " (s)\n";
   FitsImage result_image(output_file_name, OpeningMode::OVERWRITE);
   result_image.CopyHeaderFrom(image);
   result_image.SetMorphologyData(result_erosion_data);
