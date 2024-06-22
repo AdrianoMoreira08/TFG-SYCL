@@ -22,8 +22,8 @@ enum OpeningMode {
  * @brief Manages FITS images
  * - Asumes there is only one HDU and the data image is two-dimensional.
  * - Any changes on the image are only applied to the internal representation,
- *   the file is not modified until the destructor is called or WriteToFile()
- *   is called.
+ *   the original file is not modified unless explicitly indicated using
+ *   WriteToOriginalFile().
 */
 class FitsImage {
  public:
