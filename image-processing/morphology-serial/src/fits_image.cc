@@ -56,6 +56,7 @@ FitsImage::FitsImage(std::string file_name, int mode):
 
 FitsImage::~FitsImage() {
   fits_close_file(fits_file_, &status_);
+  delete[] image_data_;
 }
 
 void FitsImage::CopyHeaderFrom(FitsImage& other_image) {
