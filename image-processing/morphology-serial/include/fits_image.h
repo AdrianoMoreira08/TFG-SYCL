@@ -92,8 +92,6 @@ class FitsImage {
   /**
    * @brief Writes only the image data into the given FITS file.
    * @param fits_file FITS file pointer.
-   * @param data_type Data type of the output file. Transforms the internal data
-   *  to that type.
    */
   template<DataType T>
   void WriteImageData(fitsfile* fits_file);
