@@ -64,27 +64,19 @@ class FitsImage {
   void SetMorphologyData(std::stringstream& data);
   // Returns the status of the last operation.
   inline int GetStatus() const { return status_; }
-  // Reads the image from the original FITS file. Overwrites the internal image.
-  void ReloadImage();
+  /**
+   * @brief Reads the image from the original FITS file as binary BYTE type.
+   * Overwrites the internal image.
+   * @param threshold The threshold to convert the data to binary.
+   */
+  void Load(double threshold);
   // Writes the internal image to the FITS file.
-  template<DataType T>
-  void WriteToOriginalFile() {
-    WriteImageData<T>(fits_file_);
-  }
+  inline void WriteToOriginalFile() { WriteImageData(fits_file_); }
   // Writes the internal image to a new FITS file.
-  template<DataType T>
-  void WriteToFile(std::string file_name) {
-    fitsfile* new_file;
-    // Adds a '!' to the file name to overwrite it.
-    file_name = std::string("!") + file_name;
-    fits_create_file(&new_file, file_name.c_str(), &status_);
-    fits_copy_header(fits_file_, new_file, &status_);
-    WriteImageData<T>(new_file);
-    fits_close_file(new_file, &status_);
-  }
-  // Calculates the median value of the image.
+  void WriteToFile(std::string file_name);
+  // Calculates the median value of the original image.
   double CalculateMedian();
-  // Calculates the mean value of the image.
+  // Calculates the mean value of the original image.
   double CalculateMean();
  private:
   // Checks if the internal file of the FITS image exists.
@@ -93,7 +85,6 @@ class FitsImage {
    * @brief Writes only the image data into the given FITS file.
    * @param fits_file FITS file pointer.
    */
-  template<DataType T>
   void WriteImageData(fitsfile* fits_file);
 
   static constexpr int kAmountOfAxis = 2;
@@ -103,7 +94,7 @@ class FitsImage {
   int status_;
   long dimensions_[kAmountOfAxis];
   long total_elements_;
-  double* image_data_;
+  unsigned char* image_data_;
 };
 
 

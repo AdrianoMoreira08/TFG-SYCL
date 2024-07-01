@@ -67,7 +67,7 @@ int ProtectedMain(int argc, char* argv[]) {
       std::cerr << Text::kInvalidThreshold << std::endl;
       return 1;
   }
-  image.ConvertToBinary(threshold);
+  image.Load(threshold);
   std::stringstream morphology_data{image.GetMorphologyData()};
   Morphology morphology(morphology_data, structuring_element_file);
   std::stringstream result_erosion_data;
@@ -99,7 +99,7 @@ int ProtectedMain(int argc, char* argv[]) {
   FitsImage result_image(output_file_name, OpeningMode::OVERWRITE);
   result_image.CopyHeaderFrom(image);
   result_image.SetMorphologyData(result_erosion_data);
-  result_image.WriteToOriginalFile<DataType::BYTE>();
+  result_image.WriteToOriginalFile();
   
   return 0;
 }
