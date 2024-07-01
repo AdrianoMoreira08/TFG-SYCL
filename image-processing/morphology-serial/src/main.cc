@@ -99,7 +99,7 @@ int ProtectedMain(int argc, char* argv[]) {
   FitsImage result_image(output_file_name, OpeningMode::OVERWRITE);
   result_image.CopyHeaderFrom(image);
   result_image.SetMorphologyData(result_erosion_data);
-  result_image.WriteToOriginalFile();
+  result_image.WriteToOriginalFile<DataType::BYTE>();
   
   return 0;
 }

@@ -19,6 +19,15 @@ enum OpeningMode {
 };
 
 /**
+ * Output data types for FITS files.
+ * BYTE is an unsigned char.
+ */
+enum class DataType {
+  DOUBLE = DOUBLE_IMG,
+  BYTE = BYTE_IMG
+};
+
+/**
  * @brief Manages FITS images
  * - Asumes there is only one HDU and the data image is two-dimensional.
  * - Any changes on the image are only applied to the internal representation,
@@ -58,9 +67,21 @@ class FitsImage {
   // Reads the image from the original FITS file. Overwrites the internal image.
   void ReloadImage();
   // Writes the internal image to the FITS file.
-  void WriteToOriginalFile();
+  template<DataType T>
+  void WriteToOriginalFile() {
+    WriteImageData<T>(fits_file_);
+  }
   // Writes the internal image to a new FITS file.
-  void WriteToFile(std::string file_name);
+  template<DataType T>
+  void WriteToFile(std::string file_name) {
+    fitsfile* new_file;
+    // Adds a '!' to the file name to overwrite it.
+    file_name = std::string("!") + file_name;
+    fits_create_file(&new_file, file_name.c_str(), &status_);
+    fits_copy_header(fits_file_, new_file, &status_);
+    WriteImageData<T>(new_file);
+    fits_close_file(new_file, &status_);
+  }
   // Calculates the median value of the image.
   double CalculateMedian();
   // Calculates the mean value of the image.
@@ -68,6 +89,14 @@ class FitsImage {
  private:
   // Checks if the internal file of the FITS image exists.
   bool FileExists();
+  /**
+   * @brief Writes only the image data into the given FITS file.
+   * @param fits_file FITS file pointer.
+   * @param data_type Data type of the output file. Transforms the internal data
+   *  to that type.
+   */
+  template<DataType T>
+  void WriteImageData(fitsfile* fits_file);
 
   static constexpr int kAmountOfAxis = 2;
 
@@ -78,4 +107,6 @@ class FitsImage {
   long total_elements_;
   double* image_data_;
 };
+
+
 

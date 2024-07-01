@@ -111,20 +111,6 @@ void FitsImage::ReloadImage() {
     nullptr, &status_);
 }
 
-void FitsImage::WriteToOriginalFile() {
-  fits_write_img(fits_file_, TDOUBLE, 1, total_elements_, image_data_, &status_);
-}
-
-void FitsImage::WriteToFile(std::string file_name) {
-  fitsfile* new_file;
-  // Adds a '!' to the file name to overwrite it.
-  file_name = std::string("!") + file_name;
-  fits_create_file(&new_file, file_name.c_str(), &status_);
-  fits_copy_header(fits_file_, new_file, &status_);
-  fits_write_img(new_file, TDOUBLE, 1, total_elements_, image_data_, &status_);
-  fits_close_file(new_file, &status_);
-}
-
 double FitsImage::CalculateMedian() {
   double* data = new double[total_elements_];
   std::copy(image_data_, image_data_ + total_elements_, data);
@@ -154,4 +140,19 @@ bool FitsImage::FileExists() {
   bool exists{file.good()};
   file.close();
   return exists;
+}
+
+template<>
+void FitsImage::WriteImageData<DataType::DOUBLE>(fitsfile* fits_file) {
+  fits_write_img(fits_file, TDOUBLE, 1, total_elements_, image_data_, &status_);
+}
+
+template<>
+void FitsImage::WriteImageData<DataType::BYTE>(fitsfile* fits_file) {
+  unsigned char* transformed_data_ = new unsigned char[total_elements_];
+  fits_resize_img(fits_file, BYTE_IMG, kAmountOfAxis, dimensions_, &status_);
+  for (long index{0}; index < total_elements_; ++index) {
+    transformed_data_[index] = static_cast<unsigned char>(image_data_[index]);
+  }
+  fits_write_img(fits_file, TBYTE, 1, total_elements_, transformed_data_, &status_);
 }
