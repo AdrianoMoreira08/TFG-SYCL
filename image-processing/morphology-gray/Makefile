@@ -13,8 +13,23 @@ DEBUG     = no
 
 program = morph
 
-source = main.cc morphology.cc fits_image.cc
-incl = morphology.h fits_image.h
+source = main.cc \
+				 fits_image.cc \
+				 fits_utils.cc \
+				 templated_fits_image.cc \
+				 structuring_element.cc \
+				 templated_structuring_element.cc \
+			 	 morphology.cc \
+			 	 erode.cc \
+				 utils.cc
+incl = fits_image.h \
+			 fits_utils.h \
+			 templated_fits_image.h \
+			 structuring_element.h \
+			 templated_structuring_element.h \
+			 morphology.h \
+			 erode.h \
+			 utils.h
 
 obj = $(source:.cc=.o)
 
@@ -29,10 +44,10 @@ prefixed_incl = $(addprefix include/,$(incl))
 CFLAGS := $(EXTRA_CFLAGS) -std=c++17 -Wall
 
 # Linker Flags
-PREVLDFLAGS = -Wl,-rpath,/home/verode/alu0101436784/soft/cfitsio-4.4.0/lib
-LDFLAGS = -L/home/verode/alu0101436784/soft/cfitsio-4.4.0/lib -lcfitsio -lm -lz
+PREVLDFLAGS = -Wl,-rpath,/home/verode/alu0101436784/soft/cfitsio-3.4.5/lib
+LDFLAGS = -L/home/verode/alu0101436784/soft/cfitsio-3.4.5/lib -lcfitsio -lm -lz
 
-OBJFLAGS = -I/home/verode/alu0101436784/soft/cfitsio-4.4.0/include -Dg77Fortran -fPIC
+OBJFLAGS = -I/home/verode/alu0101436784/soft/cfitsio-3.4.5/include -Dg77Fortran -fPIC
 
 # Debug Flags
 ifeq ($(DEBUG),yes)
@@ -49,14 +64,16 @@ endif
 # Targets to Build
 #===============================================================================
 
-$(program): $(obj)
-	$(CC) $(CFLAGS) $(PREVLDFLAGS) $(prefixed_obj) -I. -o bin/$@ $(LDFLAGS)
+.PHONY: template clean
 
-%.o: src/%.cc
-	$(CC) $(CFLAGS) -c $(OBJFLAGS) $< -o build/$@
+bin/$(program): $(prefixed_obj)
+	$(CC) $(CFLAGS) $(PREVLDFLAGS) $(prefixed_obj) -I. -o $@ $(LDFLAGS)
 
-clean:
-	rm -rf bin/$(program) build/$(obj)
+build/%.o: src/%.cc
+	$(CC) $(CFLAGS) -c $(OBJFLAGS) $< -o $@
 
 template:
 	mkdir bin build
+
+clean:
+	rm -rf bin/$(program) $(prefixed_obj)
