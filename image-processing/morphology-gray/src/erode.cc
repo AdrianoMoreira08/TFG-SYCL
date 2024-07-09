@@ -1,10 +1,14 @@
 /**
  * @brief Erode class which implements the morphological erosion operation.
- * 
+ *  
  * @author Adriano dos Santos Moreira <alu0101436784@ull.edu.es>
  */
 
-#include "../include/erode.h"
+#ifdef USE_SYCL
+  #include "../include/erode_sycl.h"
+#else
+  #include "../include/erode.h"
+#endif
 
 Morphology* NewErode(int data_type) {
   Morphology* operation;

@@ -8,7 +8,12 @@
 
 #include <fitsio.h>
 
-#include "../include/erode.h"
+#ifdef USE_SYCL
+  #include "../include/erode_sycl.h"
+#else
+  #include "../include/erode.h"
+#endif
+
 #include "../include/fits_image.h"
 
 Morphology* GetMorphologyOperation(std::string operation, int data_type) {

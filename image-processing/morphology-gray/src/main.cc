@@ -12,7 +12,6 @@
 
 #include "../include/templated_fits_image.h"
 #include "../include/templated_structuring_element.h"
-#include "../include/erode.h"
 #include "../include/utils.h"
 
 /**
@@ -41,6 +40,8 @@ int ProtectedMain(int argc, char* argv[]) {
   std::string output_file_name{argv[3]};
   std::string operation_input{argv[4]};
 
+  auto start_program_time = std::chrono::steady_clock::now();
+  
   FitsImage* image = NewFitsImage(image_file_name);
   const int kDataType{image->GetDataType()};
   StructuringElement* sel = NewStructuringElement(sel_file_name, kDataType);
@@ -48,16 +49,25 @@ int ProtectedMain(int argc, char* argv[]) {
   const long kPadding{std::max(sel->Rows(), sel->Columns())};
   image->Load(kPadding, GetFillingType(operation_input));
   image->SetMorphology(operation);
-  auto start_time = std::chrono::steady_clock::now();
+  auto start_operation_time = std::chrono::steady_clock::now();
   image->ApplyMorphology(sel);
-  auto end_time = std::chrono::steady_clock::now();
-  auto time = std::chrono::duration_cast<std::chrono::nanoseconds>(end_time - start_time).count();
-  std::cout << "Operation execution time: " << NanosecondsToSeconds(time) << " (s)\n";
+  auto end_operation_time = std::chrono::steady_clock::now();
   image->WriteToFile(output_file_name);
 
   delete image;
   delete sel;
   delete operation;
+
+  auto end_program_time = std::chrono::steady_clock::now();
+
+  auto operation_time = std::chrono::duration_cast<std::chrono::nanoseconds>(
+    end_operation_time - start_operation_time).count();
+  auto program_time = std::chrono::duration_cast<std::chrono::nanoseconds>(
+    end_program_time - start_program_time).count();
+  std::cout << "Program execution time: "
+            << NanosecondsToSeconds(program_time) << " (s)" << std::endl;
+  std::cout << "Operation execution time: "
+            << NanosecondsToSeconds(operation_time) << " (s)" << std::endl;
 
   return 0;
 }
