@@ -24,13 +24,10 @@ namespace Text {
     "  <se_file>        - The structuring element file.\n"
     "  <output_file>    - The output FITS file to be created.\n"
     "  <operation>      - The morphological operation to perform (single letter).\n"
-    "      Options: (e)rosion, (d)ilation."
+    "      Options: (e)rosion."
   };
   const std::string kInvalidOperation{
-    "Invalid operation. Use one of the following: (e)rosion, (d)ilation, (o)pening, (c)losing."
-  };
-  const std::string kInvalidThreshold{
-    "Invalid threshold type. Use one of the following: (m)edian, (a)verage."
+    "Invalid operation. Use one of the following: (e)rosion."
   };
 }
 
